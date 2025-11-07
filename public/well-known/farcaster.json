@@ -1,0 +1,15 @@
+{
+  "frame": {
+    "name": "WeatherCaster",
+    "version": "1",
+    "iconUrl": "https://city-clouds.vercel.app/icon.png",
+    "homeUrl": "https://city-clouds.vercel.app",
+    "imageUrl": "https://city-clouds.vercel.app/image.png",
+    "splashImageUrl": "https://city-clouds.vercel.app/splash.png",
+    "splashBackgroundColor": "#AE75DA",
+    "webhookUrl": "https://city-clouds.vercel.app/api/webhook",
+    "subtitle": "launch and know your city weather",
+    "description": "weather app",
+    "primaryCategory": "utility"
+  }
+}
