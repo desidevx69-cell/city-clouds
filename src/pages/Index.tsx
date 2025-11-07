@@ -35,34 +35,75 @@ const Index = () => {
 
     setLoading(true);
     try {
-      // Using OpenWeatherMap API - you'll need to add your API key
-      const API_KEY = "bd5e378503939ddaee76f12ad7a97608"; // Free demo key
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityName)}&appid=${API_KEY}&units=metric`
+      // Step 1: Get latitude and longitude from city name
+      const geoResponse = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`
       );
 
-      if (!response.ok) {
+      if (!geoResponse.ok) {
         throw new Error("City not found");
       }
 
-      const data = await response.json();
+      const geoData = await geoResponse.json();
+      
+      if (!geoData.results || geoData.results.length === 0) {
+        throw new Error("City not found");
+      }
+
+      const { latitude, longitude, name, country } = geoData.results[0];
+
+      // Step 2: Get weather data using latitude and longitude
+      const weatherResponse = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m,surface_pressure&timezone=auto`
+      );
+
+      if (!weatherResponse.ok) {
+        throw new Error("Weather data not available");
+      }
+
+      const weatherData = await weatherResponse.json();
+      const current = weatherData.current;
+
+      // Map weather codes to conditions
+      const getCondition = (code: number) => {
+        if (code === 0) return "clear sky";
+        if (code <= 3) return "partly cloudy";
+        if (code <= 48) return "foggy";
+        if (code <= 67) return "rainy";
+        if (code <= 77) return "snowy";
+        if (code <= 82) return "rainy";
+        if (code <= 86) return "snowy";
+        return "stormy";
+      };
+
+      // Map weather codes to icon codes (similar to OpenWeatherMap format)
+      const getIcon = (code: number) => {
+        if (code === 0) return "01d";
+        if (code <= 3) return "02d";
+        if (code <= 48) return "50d";
+        if (code <= 67) return "10d";
+        if (code <= 77) return "13d";
+        if (code <= 82) return "09d";
+        if (code <= 86) return "13d";
+        return "11d";
+      };
       
       setWeather({
-        city: data.name,
-        country: data.sys.country,
-        temperature: data.main.temp,
-        feelsLike: data.main.feels_like,
-        condition: data.weather[0].description,
-        humidity: data.main.humidity,
-        windSpeed: data.wind.speed,
-        visibility: data.visibility,
-        pressure: data.main.pressure,
-        icon: data.weather[0].icon,
+        city: name,
+        country: country || "",
+        temperature: current.temperature_2m,
+        feelsLike: current.apparent_temperature,
+        condition: getCondition(current.weather_code),
+        humidity: current.relative_humidity_2m,
+        windSpeed: current.wind_speed_10m,
+        visibility: 10000, // Open-Meteo doesn't provide visibility, using default
+        pressure: current.surface_pressure,
+        icon: getIcon(current.weather_code),
       });
 
       toast({
         title: "Weather updated",
-        description: `Showing weather for ${data.name}`,
+        description: `Showing weather for ${name}`,
       });
     } catch (error) {
       toast({
