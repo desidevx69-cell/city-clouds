@@ -81,7 +81,7 @@ const Index = () => {
   };
 
   if (weather) {
-    return <WeatherCard weather={weather} />;
+    return <WeatherCard weather={weather} onBack={() => setWeather(null)} />;
   }
 
   return (

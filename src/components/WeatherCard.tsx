@@ -1,5 +1,6 @@
-import { Cloud, CloudRain, Sun, Wind, Droplets, Eye, Gauge } from "lucide-react";
+import { Cloud, CloudRain, Sun, Wind, Droplets, Eye, Gauge, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface WeatherData {
   city: string;
@@ -16,6 +17,7 @@ interface WeatherData {
 
 interface WeatherCardProps {
   weather: WeatherData;
+  onBack: () => void;
 }
 
 const getWeatherIcon = (condition: string, iconCode: string) => {
@@ -47,13 +49,23 @@ const getWeatherGradient = (condition: string, iconCode: string) => {
   return 'from-weather-sunny-start to-weather-sunny-end';
 };
 
-export const WeatherCard = ({ weather }: WeatherCardProps) => {
+export const WeatherCard = ({ weather, onBack }: WeatherCardProps) => {
   const gradient = getWeatherGradient(weather.condition, weather.icon);
   
   return (
     <div className={`min-h-screen bg-gradient-to-br ${gradient} flex items-center justify-center p-4 animate-fade-in`}>
       <Card className="w-full max-w-2xl bg-glass-bg backdrop-blur-xl border-glass-border shadow-2xl animate-slide-up">
         <div className="p-6 md:p-10">
+          {/* Back Button */}
+          <Button
+            onClick={onBack}
+            variant="ghost"
+            className="mb-4 text-white hover:bg-white/10"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Search Again
+          </Button>
+
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
