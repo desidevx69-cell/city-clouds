@@ -5,5 +5,8 @@
       "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/019a5f06-c4b6-edc4-d037-67c789d011e2",
       "permanent": false
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
